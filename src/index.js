@@ -2,8 +2,9 @@ import './sass/main.scss';
 import NewsApiService from './js/news-service';
 import { Notify } from 'notiflix';
 
-import SimpleLightbox from 'simplelightbox';
+import SimpleLightbox from "simplelightbox";
 import 'simplelightbox/dist/simple-lightbox.min.css';
+
 
 const refs = {
   searchImages: document.querySelector('.search-form'),
@@ -14,6 +15,7 @@ const newsApiService = new NewsApiService();
 
 refs.searchImages.addEventListener('submit', onSearch);
 refs.loudMoreBtn.addEventListener('click', onLoadMore);
+refs.loudMoreBtn.classList.add('is-hidden');
 
 function onSearch(e) {
   e.preventDefault();
@@ -22,19 +24,25 @@ function onSearch(e) {
     Notify.info('Sorry, there are no images matching your search query. Please try again.');
     refs.cardsGallery.insertAdjacentHTML = ''
   }
-  clearHitsContainer();
+  refs.loudMoreBtn.classList.remove('is-hidden');
   newsApiService.resetPage();
-  newsApiService.fetchHits().then(renderCardsGallery);
+  newsApiService.fetchHits().then(hits => {
+    clearHitsContainer();
+    renderCardsGallery(hits);
+    gallery.refresh();
+  });
   refs.searchImages.reset();
 }
+
 function onLoadMore() {
   newsApiService.fetchHits().then(renderCardsGallery);
 }
 function renderCardsGallery(hits) {
   const marcup = hits
-    .map(({ webformatURL, tags, likes, views, comments, downloads }) => {
+    .map(({ webformatURL, tags, likes, views, comments, downloads, largeImageURL }) => {
       return `
        <div class="photo-card">
+  <a href="${largeImageURL}">
   <img src="${webformatURL}" width ="310" height="160" alt="${tags}" loading="lazy" />
   <div class="info">
     <p class="info-item">
@@ -50,6 +58,7 @@ function renderCardsGallery(hits) {
       <b>Downloads</b> ${downloads}
     </p>
   </div>
+  </a>
 </div>`
     })
     .join();
@@ -59,7 +68,6 @@ function clearHitsContainer() {
   refs.cardsGallery.innerHTML = '';
 }
 
-// const gallery = new SimpleLightbox('.photo-card div');
-// gallery.on('show.simplelightbox', function () {
-
-// });
+let gallery = new SimpleLightbox('.photo-card a');
+gallery.on('show.simplelightbox', function () {
+});

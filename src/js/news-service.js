@@ -7,9 +7,10 @@ export default class newsApiService {
     return fetch(`https://pixabay.com/api/?key=25313691-12b0cc3e1565a2c76ff5ddf8f&q=${this.form}
     &lang=en&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`)
       .then(responce => responce.json())
-      .then(({ hits }) => {
+      .then(data => {
         this.page += 1;
-        return hits;
+        console.log(data.totalHits);
+        return data.hits;
       });
   }
   resetPage() {

@@ -7,7 +7,6 @@
   margin-left: 20px;
   flex-basis: calc((100% - 80px) / 5);
   margin-bottom: 20px;
-  border-radius: 50%;
 }
 .info {
   display: flex;
@@ -31,4 +30,8 @@
 }
 .load-more {
   margin: 20px;
+}
+
+.is-hidden {
+  display: none;
 }
