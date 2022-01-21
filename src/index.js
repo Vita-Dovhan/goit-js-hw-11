@@ -1,17 +1,16 @@
 import './sass/main.scss';
-import NewsApiService from './js/news-service';
+import { fetchHits } from './js/fetchHits';
 import { Notify } from 'notiflix';
-
 import SimpleLightbox from "simplelightbox";
 import 'simplelightbox/dist/simple-lightbox.min.css';
-
 
 const refs = {
   searchImages: document.querySelector('.search-form'),
   loudMoreBtn: document.querySelector('.load-more'),
   cardsGallery: document.querySelector('.gallery'),
 };
-const newsApiService = new NewsApiService();
+let page = 1;
+let query = '';
 
 refs.searchImages.addEventListener('submit', onSearch);
 refs.loudMoreBtn.addEventListener('click', onLoadMore);
@@ -19,24 +18,32 @@ refs.loudMoreBtn.classList.add('is-hidden');
 
 function onSearch(e) {
   e.preventDefault();
-  newsApiService.query = e.currentTarget.elements.searchQuery.value;
-  if (!newsApiService.query) {
-    Notify.info('Sorry, there are no images matching your search query. Please try again.');
+  query = e.currentTarget.elements.searchQuery.value;
+  if (!query) {
+    Notify.info("Sorry, there are no images matching your search query. Please try again.");
     refs.cardsGallery.insertAdjacentHTML = ''
   }
   refs.loudMoreBtn.classList.remove('is-hidden');
-  newsApiService.resetPage();
-  newsApiService.fetchHits().then(hits => {
-    clearHitsContainer();
-    renderCardsGallery(hits);
-    gallery.refresh();
-  });
+  page = 1;
+  fetchHits(query, page)
+    .then(hits => {
+      clearHitsContainer();
+      renderCardsGallery(hits);
+      gallery.refresh();
+    });
   refs.searchImages.reset();
 }
 
 function onLoadMore() {
-  newsApiService.fetchHits().then(renderCardsGallery);
+  fetchHits(query, page)
+    .then(renderCardsGallery);
+  page += 1;
+  if (page * 40 > 500) {
+    refs.loudMoreBtn.classList.add('is-hidden');
+    Notify.info("We're sorry, but you've reached the end of search results.")
+  };
 }
+
 function renderCardsGallery(hits) {
   const marcup = hits
     .map(({ webformatURL, tags, likes, views, comments, downloads, largeImageURL }) => {
@@ -64,6 +71,7 @@ function renderCardsGallery(hits) {
     .join();
   refs.cardsGallery.insertAdjacentHTML('beforeend', marcup);
 }
+
 function clearHitsContainer() {
   refs.cardsGallery.innerHTML = '';
 }
