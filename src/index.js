@@ -21,9 +21,9 @@ function onSearch(e) {
   query = e.currentTarget.elements.searchQuery.value;
   if (!query) {
     Notify.info("Sorry, there are no images matching your search query. Please try again.");
-    refs.cardsGallery.insertAdjacentHTML = ''
+    refs.cardsGallery.innerHTML = '';
+    return;
   }
-  refs.loudMoreBtn.classList.remove('is-hidden');
   page = 1;
   fetchHits(query, page)
     .then(hits => {
@@ -50,7 +50,7 @@ function renderCardsGallery(hits) {
       return `
        <div class="photo-card">
   <a href="${largeImageURL}">
-  <img src="${webformatURL}" width ="310" height="160" alt="${tags}" loading="lazy" />
+  <img src="${webformatURL}" width ="310" height="160" alt="${tags}" loading="lazy" title="${tags}"/>
   <div class="info">
     <p class="info-item">
       <b>Likes</b> ${likes}
@@ -77,5 +77,17 @@ function clearHitsContainer() {
 }
 
 let gallery = new SimpleLightbox('.photo-card a');
-gallery.on('show.simplelightbox', function () {
+gallery.on('show.simplelightbox', {
+  animationSlide: true,
+  animationSpeed: 250,
+  title: 'alt',
 });
+
+
+
+
+
+// new SimpleLightbox('.photo-card a', {
+//   captionsData: 'alt',
+//   captionDelay: 250,
+// });
