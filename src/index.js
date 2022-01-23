@@ -70,12 +70,12 @@ function renderCardsGallery(hits) {
     })
     .join();
   refs.cardsGallery.insertAdjacentHTML('beforeend', marcup);
+  refs.loudMoreBtn.classList.remove('is-hidden');
 }
 
 function clearHitsContainer() {
   refs.cardsGallery.innerHTML = '';
 }
-
 let gallery = new SimpleLightbox('.photo-card a');
 gallery.on('show.simplelightbox', {
   animationSlide: true,
@@ -87,7 +87,3 @@ gallery.on('show.simplelightbox', {
 
 
 
-// new SimpleLightbox('.photo-card a', {
-//   captionsData: 'alt',
-//   captionDelay: 250,
-// });
